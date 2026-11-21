@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Conecta — Relacionamentos</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- Splash / Loading -->
+    <div id="screen-splash" class="screen active">
+      <div class="splash-content">
+        <div class="logo">Conecta</div>
+        <p class="tagline">Conexões reais, do seu jeito</p>
+        <div class="loader"></div>
+      </div>
+    </div>
+
+    <!-- Onboarding / Login -->
+    <div id="screen-auth" class="screen">
+      <div class="auth-container">
+        <div class="logo-small">Conecta</div>
+        <h1>Bem-vindo(a)</h1>
+        <p class="subtitle">Conheça pessoas compatíveis. Cadastro e conversas após match são gratuitos.</p>
+        
+        <div class="auth-tabs">
+          <button class="tab active" data-tab="login">Entrar</button>
+          <button class="tab" data-tab="register">Criar conta</button>
+        </div>
+
+        <form id="form-login" class="auth-form">
+          <input type="email" id="login-email" placeholder="E-mail" required />
+          <input type="password" id="login-password" placeholder="Senha" required />
+          <button type="submit" class="btn primary">Entrar</button>
+        </form>
+
+        <form id="form-register" class="auth-form hidden">
+          <input type="text" id="reg-name" placeholder="Seu nome" required />
+          <input type="email" id="reg-email" placeholder="E-mail" required />
+          <input type="password" id="reg-password" placeholder="Senha (mín. 6 caracteres)" minlength="6" required />
+          <div class="age-check">
+            <label>
+              <input type="checkbox" id="reg-age" required />
+              Confirmo que tenho 18 anos ou mais
+            </label>
+          </div>
+          <button type="submit" class="btn primary">Criar conta</button>
+        </form>
+
+        <p class="disclaimer">Ao continuar, você concorda com os Termos de Uso e Política de Privacidade. O app é exclusivo para maiores de 18 anos.</p>
+      </div>
+    </div>
+
+    <!-- Profile Setup -->
+    <div id="screen-profile-setup" class="screen">
+      <div class="header">
+        <h2>Complete seu perfil</h2>
+        <p>Quanto mais completo, melhores as conexões</p>
+      </div>
+      <div class="setup-form">
+        <div class="photo-upload">
+          <div class="photo-placeholder" id="photo-preview">
+            <span>+</span>
+            <small>Adicionar foto</small>
+          </div>
+          <input type="file" id="photo-input" accept="image/*" hidden />
+        </div>
+        <input type="text" id="profile-bio" placeholder="Escreva uma bio curta..." maxlength="150" />
+        <div class="interests">
+          <label>Interesses (escolha até 5)</label>
+          <div class="chips" id="interest-chips">
+            <button type="button" class="chip" data-interest="Música">Música</button>
+            <button type="button" class="chip" data-interest="Viagens">Viagens</button>
+            <button type="button" class="chip" data-interest="Cinema">Cinema</button>
+            <button type="button" class="chip" data-interest="Esportes">Esportes</button>
+            <button type="button" class="chip" data-interest="Culinária">Culinária</button>
+            <button type="button" class="chip" data-interest="Livros">Livros</button>
+            <button type="button" class="chip" data-interest="Games">Games</button>
+            <button type="button" class="chip" data-interest="Arte">Arte</button>
+            <button type="button" class="chip" data-interest="Natureza">Natureza</button>
+            <button type="button" class="chip" data-interest="Tecnologia">Tecnologia</button>
+          </div>
+        </div>
+        <div class="preferences">
+          <label>Preferência de gênero</label>
+          <select id="pref-gender">
+            <option value="todos">Todos</option>
+            <option value="mulheres">Mulheres</option>
+            <option value="homens">Homens</option>
+            <option value="nao-binario">Não-binário</option>
+          </select>
+        </div>
+        <button id="btn-finish-profile" class="btn primary">Continuar</button>
+      </div>
+    </div>
+
+    <!-- Main App Shell -->
+    <div id="screen-main" class="screen">
+      <!-- Discovery -->
+      <div id="tab-discover" class="tab-content active">
+        <div class="top-bar">
+          <div class="logo-tiny">Conecta</div>
+          <div class="coins-badge" id="coins-display">
+            <span class="coin-icon">●</span>
+            <span id="coins-amount">50</span>
+          </div>
+        </div>
+
+        <div class="discovery-area">
+          <div class="card-stack" id="card-stack">
+            <!-- Cards injected by JS -->
+          </div>
+          <div class="no-more-cards hidden" id="no-more">
+            <h3>Por hoje é só!</h3>
+            <p>Você usou todas as curtidas diárias gratuitas.</p>
+            <p class="hint">Volte amanhã ou use moedas para curtidas extras.</p>
+            <button class="btn secondary" id="btn-buy-likes">Comprar curtidas extras</button>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button class="action-btn pass" id="btn-pass" title="Passar">✕</button>
+          <button class="action-btn super" id="btn-super" title="Curtida especial (10 moedas)">★</button>
+          <button class="action-btn like" id="btn-like" title="Curtir">♥</button>
+        </div>
+
+        <div class="daily-limit">
+          Curtidas restantes hoje: <strong id="likes-left">15</strong>
+        </div>
+      </div>
+
+      <!-- Matches -->
+      <div id="tab-matches" class="tab-content">
+        <div class="top-bar">
+          <h2>Matches</h2>
+        </div>
+        <div class="matches-list" id="matches-list">
+          <!-- Injected -->
+        </div>
+        <div class="empty-state hidden" id="empty-matches">
+          <p>Nenhum match ainda.</p>
+          <p class="hint">Continue curtindo perfis compatíveis!</p>
+        </div>
+      </div>
+
+      <!-- Chat -->
+      <div id="tab-chat" class="tab-content">
+        <div class="chat-header" id="chat-header">
+          <button class="back-btn" id="btn-back-chat">←</button>
+          <div class="chat-user-info">
+            <div class="avatar" id="chat-avatar"></div>
+            <span id="chat-name">Nome</span>
+          </div>
+          <button class="more-btn" id="btn-chat-more">⋮</button>
+        </div>
+        <div class="messages" id="messages-container">
+          <!-- Messages -->
+        </div>
+        <div class="chat-input-area">
+          <input type="text" id="message-input" placeholder="Digite uma mensagem..." />
+          <button id="btn-send">Enviar</button>
+        </div>
+      </div>
+
+      <!-- Wallet -->
+      <div id="tab-wallet" class="tab-content">
+        <div class="top-bar">
+          <h2>Carteira</h2>
+        </div>
+        <div class="wallet-balance">
+          <div class="balance-card">
+            <span class="label">Saldo atual</span>
+            <div class="amount"><span class="coin-icon">●</span> <span id="wallet-coins">50</span></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Comprar moedas</h3>
+          <div class="packages" id="coin-packages">
+            <div class="package" data-coins="50" data-price="9,90">
+              <div class="pkg-coins">50</div>
+              <div class="pkg-price">R$ 9,90</div>
+            </div>
+            <div class="package popular" data-coins="150" data-price="24,90">
+              <div class="badge">Popular</div>
+              <div class="pkg-coins">150</div>
+              <div class="pkg-price">R$ 24,90</div>
+            </div>
+            <div class="package" data-coins="400" data-price="59,90">
+              <div class="pkg-coins">400</div>
+              <div class="pkg-price">R$ 59,90</div>
+            </div>
+            <div class="package" data-coins="1000" data-price="129,90">
+              <div class="pkg-coins">1000</div>
+              <div class="pkg-price">R$ 129,90</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Recursos com moedas</h3>
+          <div class="feature-list">
+            <div class="feature-item">
+              <span>Curtida especial</span>
+              <span class="cost">10 ●</span>
+            </div>
+            <div class="feature-item">
+              <span>Destaque (30 min)</span>
+              <span class="cost">20 ●</span>
+            </div>
+            <div class="feature-item">
+              <span>Mensagem de apresentação</span>
+              <span class="cost">15 ●</span>
+            </div>
+            <div class="feature-item">
+              <span>Reabrir match</span>
+              <span class="cost">10 ●</span>
+            </div>
+            <div class="feature-item">
+              <span>Presente virtual</span>
+              <span class="cost">a partir de 5 ●</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Histórico</h3>
+          <div class="history" id="coin-history">
+            <!-- Injected -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile / Safety -->
+      <div id="tab-profile" class="tab-content">
+        <div class="top-bar">
+          <h2>Meu perfil</h2>
+        </div>
+        <div class="my-profile">
+          <div class="my-photo" id="my-photo"></div>
+          <h3 id="my-name">Usuário</h3>
+          <p id="my-bio">Bio...</p>
+          <div class="my-interests" id="my-interests"></div>
+        </div>
+
+        <div class="menu-list">
+          <button class="menu-item" id="btn-edit-profile">Editar perfil</button>
+          <button class="menu-item" id="btn-safety">Segurança e privacidade</button>
+          <button class="menu-item" id="btn-premium">Assinatura Premium</button>
+          <button class="menu-item danger" id="btn-logout">Sair</button>
+        </div>
+      </div>
+
+      <!-- Bottom Navigation -->
+      <nav class="bottom-nav">
+        <button class="nav-btn active" data-tab="discover">
+          <span class="icon">🔥</span>
+          <span>Descobrir</span>
+        </button>
+        <button class="nav-btn" data-tab="matches">
+          <span class="icon">💬</span>
+          <span>Matches</span>
+        </button>
+        <button class="nav-btn" data-tab="wallet">
+          <span class="icon">●</span>
+          <span>Carteira</span>
+        </button>
+        <button class="nav-btn" data-tab="profile">
+          <span class="icon">👤</span>
+          <span>Perfil</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Safety Modal -->
+    <div id="modal-safety" class="modal hidden">
+      <div class="modal-content">
+        <h3>Segurança e Privacidade</h3>
+        <ul class="safety-list">
+          <li>✅ Bloquear e denunciar são sempre gratuitos</li>
+          <li>✅ Nunca pedimos ou enviamos dinheiro</li>
+          <li>✅ Não vendemos mensagens</li>
+          <li>✅ Controles de gastos e histórico disponíveis</li>
+          <li>⚠️ Cuidado com pedidos de transferência</li>
+        </ul>
+        <button class="btn primary" id="btn-close-safety">Entendi</button>
+      </div>
+    </div>
+
+    <!-- Match Celebration -->
+    <div id="modal-match" class="modal hidden">
+      <div class="match-content">
+        <h2>É um Match! 🎉</h2>
+        <div class="match-photos">
+          <div class="match-photo" id="match-me"></div>
+          <div class="match-photo" id="match-them"></div>
+        </div>
+        <p>Vocês se curtiram mutuamente.</p>
+        <button class="btn primary" id="btn-start-chat">Começar a conversar</button>
+        <button class="btn text" id="btn-keep-swiping">Continuar descobrindo</button>
+      </div>
+    </div>
+
+    <!-- Confirm Purchase -->
+    <div id="modal-confirm" class="modal hidden">
+      <div class="modal-content">
+        <h3 id="confirm-title">Confirmar</h3>
+        <p id="confirm-text"></p>
+        <div class="modal-actions">
+          <button class="btn secondary" id="btn-cancel-confirm">Cancelar</button>
+          <button class="btn primary" id="btn-ok-confirm">Confirmar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Report / Block -->
+    <div id="modal-report" class="modal hidden">
+      <div class="modal-content">
+        <h3>Denunciar ou Bloquear</h3>
+        <p>Escolha uma ação (sempre gratuita):</p>
+        <button class="btn secondary full" id="btn-block">Bloquear perfil</button>
+        <button class="btn danger full" id="btn-report">Denunciar</button>
+        <button class="btn text" id="btn-cancel-report">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
